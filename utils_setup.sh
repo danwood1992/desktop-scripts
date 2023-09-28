@@ -1,75 +1,101 @@
 #!/bin/bash
 
-# Author: Daniel Wood 
-# Last Updated: 28-09-23
-# NOTE: Run this script as root or with sudo.
+# Author: Daniel Wood (Woody)
+# Last Updated: 2023-09-28
 
-LOG_FILE="./logs/utils_setup.log"
+# Configuration
+LOG_DIR="/var/log/my_dev_setup"
+LOG_FILE="$LOG_DIR/utils_setup.log"
+NODEJS_SETUP_URL="https://deb.nodesource.com/setup_18.x"
+PACKAGE_LIST="curl wget git vim htop net-tools build-essential python3 python3-pip python3-venv"
 
-function check_root() {
-  if [ "$(id -u)" -ne 0 ]; then
-    echo "This script must be run as root"
+# Setup logging directory and file with appropriate permissions
+
+check_root() {
+  if [ "$EUID" -ne 0 ]; then
+    echo "Run as root" >&2
     exit 1
   fi
 }
 
-function update_packages() {
-  echo "Updating package list and upgrading existing packages..." | tee -a $LOG_FILE
+
+setup_logging() {
+  mkdir -p "$LOG_DIR"
+  chmod 700 "$LOG_DIR"
+
+  touch "$LOG_FILE"
+  chmod 600 "$LOG_FILE"
+}
+
+handle_error() {
+  log_entry "Error on line $1"
+  exit 1
+}
+
+
+log_entry() {
+  echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+}
+
+install_packages() {
+  for package in "$@" ; do
+    if ! dpkg -l | grep -qw "$package"; then
+      log_entry "Installing $package..."
+      DEBIAN_FRONTEND=noninteractive apt install -y "$package" || { log_entry "Failed to install $package"; exit 1; }
+    else
+      log_entry "$package is already installed, skipping..."
+    fi
+  done
+}
+
+check_ubuntu() {
+  log_entry "Checking OS..."
+  grep -q 'Ubuntu' /etc/os-release || { log_entry "Only for Ubuntu"; exit 1; }
+}
+
+check_internet() {
+  log_entry "Checking internet connection..."
+  wget -q --spider http://google.com || { log_entry "No internet"; exit 1; }
+}
+
+# Update and upgrade Ubuntu packages
+update_packages() {
+  log_entry "Updating package list and upgrading existing packages..."
   apt update -y && apt upgrade -y
 }
 
-function install_basic_utils() {
-  echo "Installing basic utilities..." | tee -a $LOG_FILE
-  apt install -y curl wget unzip zip net-tools git build-essential python3 python3-pip
-}
+# Install Node.js, NPM, Yarn and TypeScript
+install_nodejs() {
+  log_entry "Installing Node.js and NPM..."
+  curl -fsSL $NODEJS_SETUP_URL | sudo -E bash -
+  install_packages "nodejs"
 
-function install_nodejs() {
-  echo "Installing Node.js and NPM..." | tee -a $LOG_FILE
-  curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-  apt install -y nodejs
-}
-
-function install_yarn() {
-  echo "Installing Yarn..." | tee -a $LOG_FILE
+  log_entry "Installing Yarn..."
   npm install --global yarn
-}
 
-function install_graphql() {
-  echo "Installing GraphQL utilities..." | tee -a $LOG_FILE
-  npm install -g graphql-cli
-}
-
-function install_typescript() {
-  echo "Installing TypeScript..." | tee -a $LOG_FILE
+  log_entry "Installing TypeScript..."
   npm install -g typescript
 }
 
-function cleanup() {
-  echo "Cleaning up..." | tee -a $LOG_FILE
-  apt autoremove -y && apt clean
-}
+# ---- Main Script ----
 
-function display_versions() {
-  echo "Installed versions:" | tee -a $LOG_FILE
-  git --version | tee -a $LOG_FILE
-  python3 --version | tee -a $LOG_FILE
-  pip3 --version | tee -a $LOG_FILE
-  node --version | tee -a $LOG_FILE
-  npm --version | tee -a $LOG_FILE
-  yarn --version | tee -a $LOG_FILE
-}
+# Exit on any command failure and enable debugging
+set -e
+set -o pipefail
 
-# Main Script
+# Main script
+
 check_root
+setup_logging
+trap 'handle_error $LINENO' ERR
+check_ubuntu
+check_internet
 update_packages
-install_basic_utils
+install_packages $PACKAGE_LIST
 install_nodejs
-install_yarn
-install_graphql
-install_typescript
-cleanup
-display_versions
 
-echo "Installation of development utilities completed." | tee -a $LOG_FILE
+log_entry "Installation of development utilities completed."
+
+
 
 
