@@ -1,3 +1,4 @@
+#!/bin/bash
 source ./read-config.sh
 
 install_node() {
@@ -23,3 +24,5 @@ install_node() {
   log_entry "Installing TypeScript..."
   npm install -g typescript
 }
+
+install_node

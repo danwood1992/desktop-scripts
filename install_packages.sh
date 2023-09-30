@@ -1,7 +1,10 @@
+#!/bin/bash
 source ./read-config.sh
 
 install_packages() {
   local packages=("$@")
+  echo "Installing packages..."
+  echo "Packages: ${packages[@]}"  # Corrected "ech" to "echo"
   for package in "${packages[@]}"; do
     if dpkg -l | grep -qw "$package"; then
       log_entry "Upgrading $package..."
@@ -12,3 +15,6 @@ install_packages() {
     fi
   done
 }
+
+# Call the install_packages function with the PACKAGE_LIST from read-config.sh
+install_packages "${PACKAGE_LIST[@]}"
