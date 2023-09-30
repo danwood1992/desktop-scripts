@@ -8,8 +8,6 @@ if ! command -v jq &> /dev/null; then
   sudo apt install -y jq
 fi
 
-
-
 if [ -f "$CONFIG_FILE" ]; then
   # Read the node_version
   NODE_MAJOR=$(jq -r '.node_major' "$CONFIG_FILE")
