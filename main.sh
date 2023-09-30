@@ -25,16 +25,16 @@ case "$command" in
         source docker_setup.sh "$@"
         ;;
     "full-setup")
-        source full_setup.sh "$@"
+        source setups/full_setup.sh "$@"
         ;;
     "git-setup")
-        source git_setup.sh "$@"
+        source setups/git_setup.sh "$@"
         ;;
     "install-node")
-        source install_node.sh "$@"
+        source installs/install_node.sh "$@"
         ;;
     "install-packages")
-        source install_packages.sh "$@"
+        source installs/install_packages.sh "$@"
         ;;
     "read-config")
         source read-config.sh "$@"
