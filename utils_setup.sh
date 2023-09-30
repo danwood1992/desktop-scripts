@@ -6,8 +6,8 @@
 # Configuration
 LOG_DIR="/var/log/my_dev_setup"
 LOG_FILE="$LOG_DIR/utils_setup.log"
-NODEJS_SETUP_URL="https://deb.nodesource.com/setup_18.x"
 PACKAGE_LIST="curl wget git vim htop net-tools build-essential python3 python3-pip python3-venv"
+NODE_MAJOR=18
 
 # Setup logging directory and file with appropriate permissions
 
@@ -58,17 +58,39 @@ check_internet() {
   wget -q --spider http://google.com || { log_entry "No internet"; exit 1; }
 }
 
-# Update and upgrade Ubuntu packages
+
 update_packages() {
   log_entry "Updating package list and upgrading existing packages..."
   apt update -y && apt upgrade -y
 }
 
-# Install Node.js, NPM, Yarn and TypeScript
+
+
 install_nodejs() {
+
+  check_or_clear() {
+    # Check if Node.js is installed successfully
+    if ! command -v node &> /dev/null; then
+      # Node.js installation failed, so clear libnode72
+      echo "Removing libnode72..."
+      dpkg --purge --force-all libnode72
+    else
+      echo "Node.js is already installed, skipping removal of libnode72."
+    fi
+    apt clean
+  }
+
   log_entry "Installing Node.js and NPM..."
-  curl -fsSL $NODEJS_SETUP_URL | sudo -E bash -
-  install_packages "nodejs"
+
+  apt-get install -y ca-certificates curl gnupg
+  mkdir -p /etc/apt/keyrings
+  curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+
+  echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+  apt-get update
+  apt-get install nodejs -y
+
+  check_or_clear
 
   log_entry "Installing Yarn..."
   npm install --global yarn
@@ -76,6 +98,7 @@ install_nodejs() {
   log_entry "Installing TypeScript..."
   npm install -g typescript
 }
+
 
 # ---- Main Script ----
 
@@ -94,6 +117,7 @@ update_packages
 install_packages $PACKAGE_LIST
 install_nodejs
 
+apt --fix-broken install
 log_entry "Installation of development utilities completed."
 
 
