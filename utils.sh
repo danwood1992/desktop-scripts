@@ -23,16 +23,7 @@ log_entry() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
 }
 
-install_packages() {
-  for package in "$@" ; do
-    if ! dpkg -l | grep -qw "$package"; then
-      log_entry "Installing $package..."
-      DEBIAN_FRONTEND=noninteractive apt install -y "$package" || { log_entry "Failed to install $package"; exit 1; }
-    else
-      log_entry "$package is already installed, skipping..."
-    fi
-  done
-}
+
 
 check_ubuntu() {
   log_entry "Checking OS..."

@@ -11,6 +11,7 @@ source ./read-config.sh
 
 source ./utils.sh
 
+echo "packagelist: $PACKAGE_LIST"
 
 install_node() {
 

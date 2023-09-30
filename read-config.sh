@@ -8,6 +8,8 @@ if ! command -v jq &> /dev/null; then
   sudo apt install -y jq
 fi
 
+
+
 if [ -f "$CONFIG_FILE" ]; then
   # Read the node_version
   NODE_MAJOR=$(jq -r '.node_major' "$CONFIG_FILE")
@@ -20,6 +22,8 @@ if [ -f "$CONFIG_FILE" ]; then
 
   # Combine all package arrays into a single PACKAGE_LIST
   PACKAGE_LIST=("${NETWORKING_PACKAGES[@]}" "${SYSTEM_PACKAGES[@]}" "${UTILITY_PACKAGES[@]}" "${OPTIONAL_PACKAGES[@]}")
+
+ 
 
 else
   echo "Configuration file not found: $CONFIG_FILE"
