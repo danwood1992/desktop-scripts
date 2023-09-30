@@ -1,6 +1,5 @@
 #!/bin/bash
-source ./read-config.sh
-source ./utils.sh
+
 check_root
 LOG_DIR="/var/log/my_dev_setup/packages"
 LOG_FILE="$LOG_DIR/install_packages.log"

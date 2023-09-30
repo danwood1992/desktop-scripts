@@ -1,4 +1,10 @@
 #!/bin/bash
+
+# Author: Daniel Wood (Woody)
+# Last Updated: 2023-09-28
+# Purpose: To save time Installing and setup development utilities and packages
+
+
 BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 source "$BASE_DIR/read-config.sh"

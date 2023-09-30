@@ -1,9 +1,6 @@
 #!/bin/bash
 
-# Author: Daniel Wood (Woody)
-# Last Updated: 2023-09-28
-# Purpose: To save time Installing and setup development utilities and packages
-
+check_root
 LOG_DIR="/var/log/my_dev_setup"
 LOG_FILE="$LOG_DIR/full_setup.log"
 
@@ -14,7 +11,6 @@ source "$BASE_DIR/system_info.sh"
 set -e
 set -o pipefail
 
-check_root
 setup_logging
 trap 'handle_error $LINENO' ERR
 check_ubuntu
