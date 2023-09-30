@@ -8,7 +8,7 @@ LOG_DIR="/var/log/my_dev_setup"
 LOG_FILE="$LOG_DIR/utils_setup.log"
 PACKAGE_LIST="curl wget git vim htop net-tools build-essential python3 python3-pip python3-venv"
 NODE_MAJOR=18
-
+CONFIG_FILE="config.json"
 # Setup logging directory and file with appropriate permissions
 
 check_root() {
