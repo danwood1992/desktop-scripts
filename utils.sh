@@ -1,3 +1,6 @@
+LOG_DIR="/var/log/my_dev_setup"
+LOG_FILE="$LOG_DIR/utils_setup.log"
+
 check_root() {
   if [ "$EUID" -ne 0 ]; then
     echo "Run as root" >&2
@@ -22,8 +25,6 @@ handle_error() {
 log_entry() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
 }
-
-
 
 check_ubuntu() {
   log_entry "Checking OS..."

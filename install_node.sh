@@ -1,7 +1,22 @@
 #!/bin/bash
 source ./read-config.sh
+source ./utils.sh
+
+LOG_DIR="/var/log/my_dev_setup/node"
+LOG_FILE="$LOG_DIR/node_setup.log"
+
+setup_logging
 
 install_node() {
+
+  log_entry "Checking Node.js version..."
+  
+  # Check if node is installed and if the installed version matches the desired major version
+  if command -v node > /dev/null && [[ "$(node -v | cut -d '.' -f 1)" == "v$NODE_MAJOR" ]]; then
+    log_entry "Node.js major version $NODE_MAJOR is already installed."
+    return 0
+  fi
+  
 
   echo "Installing Node.js and NPM...$NODE_MAJOR"
   log_entry "Uninstalling Node.js and NPM..."

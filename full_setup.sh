@@ -5,7 +5,7 @@
 # Purpose: Install and configure development utilities and packages
 
 LOG_DIR="/var/log/my_dev_setup"
-LOG_FILE="$LOG_DIR/utils_setup.log"
+LOG_FILE="$LOG_DIR/full_setup.log"
 
 source ./read-config.sh
 source ./utils.sh

@@ -1,5 +1,11 @@
 #!/bin/bash
 source ./read-config.sh
+source ./utils.sh
+
+LOG_DIR="/var/log/my_dev_setup/packages"
+LOG_FILE="$LOG_DIR/install_packages.log"
+
+setup_logging
 
 install_packages() {
   local packages=("$@")
