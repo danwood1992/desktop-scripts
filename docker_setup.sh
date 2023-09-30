@@ -1,44 +1,29 @@
 #!/bin/bash
 
-# Author: Daniel Wood 
-# Last Updated: 28-09-23
-# This script is designed to handle docker installations on Ubuntu
-# Always test the script in a dev/test env before running it in prod
+LOG_DIR="/var/log/my_dev_setup"
+LOG_FILE="$LOG_DIR/docker_setup.log"
 
-set -e 
+source "$BASE_DIR/installs/install_packages.sh"
 
-DOCKER_GPG_URL="https://download.docker.com/linux/ubuntu/gpg"
-DOCKER_REPO="https://download.docker.com/linux/ubuntu"
+setup_logging
 
-install_packages() {
-  apt-get install -y -q "$@"
-}
-
-log() {
-  echo "[INFO] $1"
-}
 
 init() {
   apt-get update -q
   DEBIAN_FRONTEND=noninteractive
 }
 
-check_root() {
-  [ "$EUID" -eq 0 ] || { echo "Run as root"; exit 1; }
-}
 
-check_ubuntu() {
-  grep -q 'Ubuntu' /etc/os-release || { echo "Only for Ubuntu"; exit 1; }
-}
-
-check_internet() {
-  wget -q --spider http://google.com || { echo "No internet"; exit 1; }
-}
 
 install_docker() {
-  which curl >/dev/null || install_packages curl
-  which gpg >/dev/null || install_packages gnupg
-  install_packages ca-certificates curl gnupg
+
+  echo "Installing Docker packages..."
+  for package in "${DOCKER_PACKAGES[@]}"; do
+    echo "Installing $package..."
+    
+  done
+  sudo apt-get install ca-certificates curl gnupg
+  install_packages $DOCKER_PACKAGES
 
   curl -fsSL $DOCKER_GPG_URL | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
@@ -47,18 +32,20 @@ install_docker() {
 
   apt-get update -q
 
-  install_packages docker-ce docker-ce-cli containerd.io
+  
 }
 
-# Main script
-check_root
-check_ubuntu
-check_internet
 
-log "Removing conflicting packages..."
-apt-get remove -y -q docker docker-engine docker.io containerd runc
+# main
 
-log "Installing Docker..."
+log_entry "Removing conflicting packages..."
+
+if apt-get remove -y -q docker docker-engine docker.io containerd runc; then
+  echo "Removed conflicting packages"
+else
+  echo "No conflicting packages found"
+fi
+
 install_docker
 
 # Verify and finalize installation

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-check_root
 LOG_DIR="/var/log/my_dev_setup"
 LOG_FILE="$LOG_DIR/full_setup.log"
 

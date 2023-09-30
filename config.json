@@ -29,6 +29,19 @@
       "zsh-syntax-highlighting",
       "zsh-autosuggestions"
     ],
-    "optional_packages": []
+    "docker_packages": [
+      "docker-ce-cli",
+      "docker-ce",
+      "containerd.io",
+      "ca-certificates",
+      "curl",
+      "gnupg",
+      "gpg"
+    ],
+    "optional_packages": [],
+    "docker_gpg_url": "https://download.docker.com/linux/ubuntu/gpg",
+    "docker_repo": "https://download.docker.com/linux/ubuntu"
+    
   }
   
+

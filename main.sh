@@ -10,6 +10,10 @@ BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$BASE_DIR/read-config.sh"
 source "$BASE_DIR/utils.sh"
 
+check_root
+check_ubuntu
+check_internet
+set -e 
 # This is main.sh
 function show_usage {
     echo "Usage: main.sh <command> [<args>]"

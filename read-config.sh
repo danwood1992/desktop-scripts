@@ -21,6 +21,10 @@ if [ -f "$CONFIG_FILE" ]; then
   # Combine all package arrays into a single PACKAGE_LIST
   PACKAGE_LIST=("${NETWORKING_PACKAGES[@]}" "${SYSTEM_PACKAGES[@]}" "${UTILITY_PACKAGES[@]}" "${OPTIONAL_PACKAGES[@]}")
 
+  DOCKER_GPG_URL=$(jq -r '.docker_gpg_url' "$CONFIG_FILE")
+  DOCKER_REPO=$(jq -r '.docker_repo' "$CONFIG_FILE")
+
+  DOCKER_PACKAGES=($(jq -r '.docker_packages[]' "$CONFIG_FILE"))
   # Git info
   GIT_NAME=$(jq -r '.git_name' "$CONFIG_FILE")
   GIT_EMAIL=$(jq -r '.git_email' "$CONFIG_FILE")
