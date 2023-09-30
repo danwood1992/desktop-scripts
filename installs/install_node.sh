@@ -1,7 +1,5 @@
 #!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "$DIR/../read-config.sh"
-source "$DIR/../utils.sh"
+
 check_root
 LOG_DIR="/var/log/my_dev_setup/node"
 LOG_FILE="$LOG_DIR/node_setup.log"
