@@ -23,7 +23,9 @@ if [ -f "$CONFIG_FILE" ]; then
   # Combine all package arrays into a single PACKAGE_LIST
   PACKAGE_LIST=("${NETWORKING_PACKAGES[@]}" "${SYSTEM_PACKAGES[@]}" "${UTILITY_PACKAGES[@]}" "${OPTIONAL_PACKAGES[@]}")
 
- 
+  # Git info
+  GIT_NAME=$(jq -r '.git_name' "$CONFIG_FILE")
+  GIT_EMAIL=$(jq -r '.git_email' "$CONFIG_FILE")
 
 else
   echo "Configuration file not found: $CONFIG_FILE"

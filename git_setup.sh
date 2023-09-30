@@ -1,13 +1,8 @@
 #!/bin/bash
+source ./read-config.sh
 
-# Set your email and name here
-read -p "Enter your email: " EMAIL
-
-read -p "Enter your name: " NAME
-
-
-git config --global user.email "$EMAIL"
-git config --global user.name "$NAME"
+git config --global user.email "$GIT_EMAIL"
+git config --global user.name "$GIT_NAME"
 
 echo "Git configuration has been set up with the following values:"
 echo "Email: $EMAIL"
