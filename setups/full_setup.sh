@@ -2,16 +2,15 @@
 
 # Author: Daniel Wood (Woody)
 # Last Updated: 2023-09-28
-# Purpose: Install and configure development utilities and packages
+# Purpose: To save time Installing and setup development utilities and packages
 
 LOG_DIR="/var/log/my_dev_setup"
 LOG_FILE="$LOG_DIR/full_setup.log"
 
-source ./read-config.sh
-source ./utils.sh
-source ./install-packages.sh
-source ./install-node.sh
-source ./system-info.sh
+source "$BASE_DIR/installs/install_packages.sh"
+source "$BASE_DIR/installs/install_node.sh"
+source "$BASE_DIR/system_info.sh"
+
 set -e
 set -o pipefail
 
