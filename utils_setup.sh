@@ -2,15 +2,29 @@
 
 # Author: Daniel Wood (Woody)
 # Last Updated: 2023-09-28
+# Purpose: Install and configure development utilities and packages
 
-# Configuration
 LOG_DIR="/var/log/my_dev_setup"
 LOG_FILE="$LOG_DIR/utils_setup.log"
-PACKAGE_LIST="curl wget git vim htop net-tools build-essential python3 python3-pip python3-venv"
-NODE_MAJOR=18
-CONFIG_FILE="config.json"
-# Setup logging directory and file with appropriate permissions
 
+CONFIG_FILE="config.json"
+
+# Check if jq is installed and install it if not
+if ! command -v jq &> /dev/null; then
+  echo "jq is not installed. Installing..."
+  sudo apt update
+  sudo apt install -y jq
+fi
+
+if [ -f "$CONFIG_FILE" ]; then
+  NODE_VERSION=$(jq -r '.node_version' "$CONFIG_FILE")
+  PACKAGE_LIST=($(jq -r '.networking_packages[] + .system_packages[] + .utility_packages[] + .optional_packages[]' "$CONFIG_FILE"))
+else
+  echo "Configuration file not found: $CONFIG_FILE"
+  exit 1
+fi
+
+echo "Node version: $NODE_VERSION"
 check_root() {
   if [ "$EUID" -ne 0 ]; then
     echo "Run as root" >&2
@@ -66,31 +80,23 @@ update_packages() {
 
 
 
-install_nodejs() {
+install_node() {
 
-  check_or_clear() {
-    # Check if Node.js is installed successfully
-    if ! command -v node &> /dev/null; then
-      # Node.js installation failed, so clear libnode72
-      echo "Removing libnode72..."
-      dpkg --purge --force-all libnode72
-    else
-      echo "Node.js is already installed, skipping removal of libnode72."
-    fi
-    apt clean
-  }
+  
+  log_entry "Uninstalling Node.js and NPM..."
 
+  apt-get purge nodejs* &&\
+  rm -r /etc/apt/sources.list.d/nodesource.list &&\
+  rm -r /etc/apt/keyrings/nodesource.gpg
+ 
   log_entry "Installing Node.js and NPM..."
 
-  apt-get install -y ca-certificates curl gnupg
-  mkdir -p /etc/apt/keyrings
-  curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+  sudo apt-get update && sudo apt-get install -y ca-certificates curl gnupg
+  curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+  NODE_MAJOR=18
+  echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+  sudo apt-get update && sudo apt-get install nodejs -y
 
-  echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
-  apt-get update
-  apt-get install nodejs -y
-
-  check_or_clear
 
   log_entry "Installing Yarn..."
   npm install --global yarn
@@ -115,7 +121,7 @@ check_ubuntu
 check_internet
 update_packages
 install_packages $PACKAGE_LIST
-install_nodejs
+install_node
 
 apt --fix-broken install
 log_entry "Installation of development utilities completed."

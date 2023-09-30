@@ -1,0 +1,35 @@
+{
+    "node_version": "18",
+    "git_email": "your-email@example.com",
+    "git_name": "Your Name",
+    "networking_packages": [
+      "curl",
+      "wget",
+      "git",
+      "vim",
+      "htop",
+      "net-tools",
+      "build-essential"
+    ],
+    "system_packages": [
+      "python3",
+      "python3-pip",
+      "python3-venv"
+    ],
+    "utility_packages": [
+      "nmap",
+      "tree",
+      "tmux",
+      "screen",
+      "zip",
+      "unzip",
+      "p7zip-full",
+      "unrar",
+      "rar",
+      "zsh",
+      "zsh-syntax-highlighting",
+      "zsh-autosuggestions"
+    ],
+    "optional_packages": []
+  }
+  
