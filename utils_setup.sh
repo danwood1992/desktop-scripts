@@ -9,29 +9,43 @@ LOG_FILE="$LOG_DIR/utils_setup.log"
 
 CONFIG_FILE="config.json"
 
-# Check if jq is installed and install it if not
 if ! command -v jq &> /dev/null; then
   echo "jq is not installed. Installing..."
   sudo apt update
   sudo apt install -y jq
 fi
 
+# Check if the configuration file exists
 if [ -f "$CONFIG_FILE" ]; then
+  # Read the node_version
   NODE_VERSION=$(jq -r '.node_version' "$CONFIG_FILE")
-  PACKAGE_LIST=($(jq -r '.networking_packages[] + .system_packages[] + .utility_packages[] + .optional_packages[]' "$CONFIG_FILE"))
+
+  # Read all packages into an array
+  NETWORKING_PACKAGES=($(jq -r '.networking_packages[]' "$CONFIG_FILE"))
+  SYSTEM_PACKAGES=($(jq -r '.system_packages[]' "$CONFIG_FILE"))
+  UTILITY_PACKAGES=($(jq -r '.utility_packages[]' "$CONFIG_FILE"))
+  OPTIONAL_PACKAGES=($(jq -r '.optional_packages[]' "$CONFIG_FILE"))
+
+  # Combine all package arrays into a single PACKAGE_LIST
+  PACKAGE_LIST=("${NETWORKING_PACKAGES[@]}" "${SYSTEM_PACKAGES[@]}" "${UTILITY_PACKAGES[@]}" "${OPTIONAL_PACKAGES[@]}")
 else
   echo "Configuration file not found: $CONFIG_FILE"
   exit 1
 fi
 
-echo "Node version: $NODE_VERSION"
+# Now you can use NODE_VERSION and PACKAGE_LIST as needed
+echo "Node Version: $NODE_VERSION"
+echo "Packages:"
+for PACKAGE in "${PACKAGE_LIST[@]}"; do
+  echo "$PACKAGE"
+done
+
 check_root() {
   if [ "$EUID" -ne 0 ]; then
     echo "Run as root" >&2
     exit 1
   fi
 }
-
 
 setup_logging() {
   mkdir -p "$LOG_DIR"
@@ -82,7 +96,6 @@ update_packages() {
 
 install_node() {
 
-  
   log_entry "Uninstalling Node.js and NPM..."
 
   apt-get purge nodejs* &&\
@@ -93,7 +106,6 @@ install_node() {
 
   sudo apt-get update && sudo apt-get install -y ca-certificates curl gnupg
   curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-  NODE_MAJOR=18
   echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
   sudo apt-get update && sudo apt-get install nodejs -y
 
