@@ -10,7 +10,7 @@ setup_logging
 install_packages() {
   local packages=("$@")
   echo "Installing packages..."
-  echo "Packages: ${packages[@]}"  # Corrected "ech" to "echo"
+  echo "Packages: ${packages[@]}" 
   for package in "${packages[@]}"; do
     if dpkg -l | grep -qw "$package"; then
       log_entry "Upgrading $package..."
