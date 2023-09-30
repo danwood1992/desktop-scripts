@@ -1,8 +1,7 @@
 #!/bin/bash
+source ./read-config.sh
 
-# Define the path to your configuration file
-CONFIG_FILE="config.json"
-
+PACKAGES = $PACKAGE_LIST
 # Read the package names from the configuration file
 PACKAGES=($(jq -r '.networking_packages + .system_packages + .utility_packages + .optional_packages | join(" ")' "$CONFIG_FILE"))
 

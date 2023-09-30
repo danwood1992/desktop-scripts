@@ -11,7 +11,7 @@ source ./read-config.sh
 source ./utils.sh
 source ./install-packages.sh
 source ./install-node.sh
-
+source ./system-info.sh
 set -e
 set -o pipefail
 
@@ -25,6 +25,8 @@ install_packages $PACKAGE_LIST
 install_node
 
 apt --fix-broken install
+
+
 log_entry "Installation of development utilities completed."
 
 
