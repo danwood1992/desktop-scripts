@@ -20,5 +20,4 @@ install_packages() {
   done
 }
 
-# Call the install_packages function with the PACKAGE_LIST from read-config.sh
-install_packages "${PACKAGE_LIST[@]}"
+
