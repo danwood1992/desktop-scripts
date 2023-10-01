@@ -10,6 +10,7 @@ source "$BASE_DIR/system_info.sh"
 set -e
 set -o pipefail
 
+check_root
 setup_logging
 trap 'handle_error $LINENO' ERR
 check_ubuntu

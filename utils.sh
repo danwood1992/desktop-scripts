@@ -21,7 +21,6 @@ handle_error() {
   exit 1
 }
 
-
 log_entry() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
 }

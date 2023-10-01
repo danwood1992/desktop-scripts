@@ -1,13 +1,36 @@
 #!/bin/bash
+# Dont run as root
 
-LOG_DIR="/var/log/my_dev_setup"
-LOG_FILE="$LOG_DIR/docker_setup.log"
+echo "Removing old Docker"
+for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
 
-source "$BASE_DIR/installs/install_packages.sh"
+sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
 
-echo "Docekr GPG URL  $DOCKER_GPG_URL"
+sudo rm -rf /var/lib/docker
+sudo rm -rf /var/lib/containerd
 
-echo "Docker Repo URL $DOCKER_REPO"
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
+echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
 
+echo "Installing Docker"
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
+
+docker run hello-world
+
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+
+echo "Docker installed successfully"

@@ -33,10 +33,8 @@
       "docker-ce-cli",
       "docker-ce",
       "containerd.io",
-      "ca-certificates",
-      "curl",
-      "gnupg",
-      "gpg"
+      "docker-buildx-plugin",
+      "docker-compose-plugin"
     ],
     "optional_packages": [],
     "docker_gpg_url": "https://download.docker.com/linux/ubuntu/gpg",
